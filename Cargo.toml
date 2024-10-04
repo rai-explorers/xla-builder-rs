@@ -1,0 +1,19 @@
+[workspace]
+members = [
+    "xla-builder-sys",
+    "xla-builder"
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+categories = ["science"]
+
+[workspace.dependencies]
+xla-builder-sys = { path = "./xla-builder-sys", version = "0.1.0" }
+
+# build dependencies
+bindgen = "0.69.4"

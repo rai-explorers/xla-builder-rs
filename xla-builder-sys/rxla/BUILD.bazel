@@ -1,0 +1,74 @@
+cc_library(
+  name = "xla_builder",
+  srcs = glob(["*.cc"]),
+  hdrs = glob(["*.h"]),
+  deps = [
+    "@xla//xla/hlo/builder:xla_builder",
+    "@xla//xla/hlo/builder:xla_computation",
+    "@xla//xla/hlo/builder/lib:constants",
+    "@com_google_absl//absl/status",
+  ],
+  features = ["-use_header_modules"],
+)
+
+cc_binary(
+  name = "librxla.so",
+  deps = [
+    ":xla_builder",
+  ],
+  linkstatic = True,
+  linkshared = True,
+)
+
+filegroup(
+    name = "headers",
+    srcs = glob(["*.h"]),
+)
+
+genrule(
+  name = "rxla_headers",
+  srcs = [
+    ":headers",
+  ],
+  outs = ["include"],
+  cmd = """
+    mkdir $@
+    for f in $(SRCS); do
+      d="$${f%/*}"
+      if [[ $${d} == external* ]]; then
+        extname="$${d#*external/}"
+        extname="$${extname%%/*}"
+        d="$${d#*external/$${extname}/}"
+      fi      
+      mkdir -p "$@/$${d}"
+      cp "$${f}" "$@/$${d}/"
+    done
+    """,
+)
+
+genrule(
+  name = "rxla_lib",
+  srcs = [
+    ":librxla.so",
+  ],
+  outs = ["lib"],
+  cmd = """
+    mkdir $@
+    mv $(SRCS) $@
+  """
+)
+
+genrule(
+  name = "package",
+  outs = ["rxla.tar.gz"],
+  srcs = [
+    ":rxla_lib",
+    ":rxla_headers",
+  ],
+  cmd = """
+    mkdir rxla_dist
+    cp -r $(SRCS) rxla_dist
+    tar czf "$@"  -s "/^rxla_dist/rxla/" rxla_dist/*
+  """,
+  visibility = ["//visibility:public"],
+)

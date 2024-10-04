@@ -1,0 +1,17 @@
+[package]
+name = "xla-builder-sys"
+version = "0.1.0"
+authors = ["cksac <cs.cksac@gmail.com>"]
+description = "A XlaBuilder bindings for Rust"
+keywords = ["deep-learning", "machine-learning", "ai"]
+edition.workspace = true
+readme.workspace = true
+license.workspace = true
+categories.workspace = true
+repository = "https://github.com/rai-explorers/xla-builder-rs"
+homepage = "https://github.com/rai-explorers/xla-builder-rs"
+
+[dependencies]
+
+[build-dependencies]
+bindgen = { workspace = true }
